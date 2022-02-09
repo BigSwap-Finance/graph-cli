@@ -1,26 +1,63 @@
 specVersion: 0.0.2
-description: "example of a subgraph"
+description: "BigSwap subgraph"
 repository: https://github.com/graphprotocol/graph-cli.git
 schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: ExampleSubgraph
-    network: mainnet
+    name: Factory
+    network: bsc
     source:
-      address: '0x22843e74c59580b3eaf6c233fa67d8b7c561a835'
-      abi: ExampleContract
+      address: '0x6b549d011FA0409B12329b618214837c0735dB85'
+      abi: Factory
+      startBlock: 14139977
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.5
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
-      file: ./src/mapping.ts
+      file: ./mappings/factory.ts
       entities:
-        - ExampleEntity
-        - OtherEntity
+        - Pair
+        - Token
       abis:
-        - name: ExampleContract
-          file: ./abis/ExampleContract.json
+        - name: Factory
+          file: ./abis/Factory.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ERC20NameBytes
+          file: ./abis/ERC20NameBytes.json
+        - name: ERC20SymbolBytes
+          file: ./abis/ERC20SymbolBytes.json
       eventHandlers:
-        - event: ExampleEvent(indexed string)
-          handler: handleExampleEvent
+        - event: PairCreated(indexed address,indexed address,address,uint256)
+          handler: handlePairCreated
+templates:
+  - kind: ethereum/contract
+    name: Pair
+    network: bsc
+    source:
+      abi: Pair
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./mappings/core.ts
+      entities:
+        - Pair
+        - Token
+      abis:
+        - name: Factory
+          file: ./abis/Factory.json
+        - name: Pair
+          file: ./abis/Pair.json
+      eventHandlers:
+        - event: Mint(indexed address,uint256,uint256)
+          handler: handleMint
+        - event: Burn(indexed address,uint256,uint256,indexed address)
+          handler: handleBurn
+        - event: Swap(indexed address,uint256,uint256,uint256,uint256,indexed address)
+          handler: handleSwap
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: Sync(uint112,uint112)
+          handler: handleSync
