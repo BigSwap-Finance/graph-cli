@@ -1,5 +1,5 @@
 {
-  "name": "example-event-handler",
+  "name": "BigSwap-event-handler",
   "scripts": {
     "codegen": "../../bin/graph codegen --output-dir src/types/ subgraph.yaml",
     "build": "../../bin/graph build subgraph.yaml",
